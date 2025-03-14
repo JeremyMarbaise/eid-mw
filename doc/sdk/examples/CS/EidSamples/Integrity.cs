@@ -38,7 +38,7 @@ namespace EidSamples
     /// Example Integrity checking class
     /** Some examples on how to verify certificates and signatures
      */
-    class Integrity
+    public class Integrity
     {
         public Integrity()
         {

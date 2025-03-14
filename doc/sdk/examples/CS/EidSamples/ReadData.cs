@@ -34,7 +34,7 @@ using PublicKey = Net.Sf.Pkcs11.Objects.PublicKey;
 
 namespace EidSamples
 {
-    class ReadData
+    public class ReadData
     {
         private Module m = null;
         private String mFileName;

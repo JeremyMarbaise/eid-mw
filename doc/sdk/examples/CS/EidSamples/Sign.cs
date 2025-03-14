@@ -34,7 +34,7 @@ using System.Security.Cryptography;
 
 namespace EidSamples
 {
-    class Sign
+    public class Sign
     {
         private Module m = null;
         private String mFileName;

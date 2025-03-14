@@ -91,11 +91,13 @@ namespace EidSamples.tests
             byte[] addressFile = trimRight(dataTest.GetAddressFile());
             byte[] idSignatureFile = dataTest.GetIdSignatureFile();
             byte[] concatFiles = new byte[addressFile.Length + idSignatureFile.Length];
+            Console.Out.WriteLine(dataTest.GetDateOfBirth());
             Array.Copy(addressFile, 0, concatFiles, 0, addressFile.Length);
             Array.Copy(idSignatureFile, 0, concatFiles, addressFile.Length, idSignatureFile.Length);
             byte[] addressSignatureFile = dataTest.GetAddressSignatureFile();
             byte[] certificateRRN = dataTest.GetCertificateRNFile();
             Assert.IsTrue(integrityTest.Verify(concatFiles, addressSignatureFile, certificateRRN));
+
         }
         private byte[] trimRight(byte[] addressFile)
         {

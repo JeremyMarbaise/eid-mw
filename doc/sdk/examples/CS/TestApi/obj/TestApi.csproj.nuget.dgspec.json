@@ -1,0 +1,117 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\eid_middleware\\eid-mw\\doc\\sdk\\examples\\CS\\TestApi\\TestApi.csproj": {}
+  },
+  "projects": {
+    "D:\\eid_middleware\\eid-mw\\doc\\sdk\\examples\\CS\\EidSamples\\EidSamples.csproj": {
+      "restore": {
+        "projectUniqueName": "D:\\eid_middleware\\eid-mw\\doc\\sdk\\examples\\CS\\EidSamples\\EidSamples.csproj",
+        "projectName": "EidSamples",
+        "projectPath": "D:\\eid_middleware\\eid-mw\\doc\\sdk\\examples\\CS\\EidSamples\\EidSamples.csproj",
+        "frameworks": {
+          "net48": {
+            "projectReferences": {
+              "D:\\eid_middleware\\eid-mw\\doc\\sdk\\wrappers\\C# pkcs11wrappers\\pkcs11net\\Pkcs11Net.csproj": {
+                "projectPath": "D:\\eid_middleware\\eid-mw\\doc\\sdk\\wrappers\\C# pkcs11wrappers\\pkcs11net\\Pkcs11Net.csproj"
+              }
+            }
+          }
+        }
+      },
+      "frameworks": {
+        "net48": {}
+      }
+    },
+    "D:\\eid_middleware\\eid-mw\\doc\\sdk\\examples\\CS\\TestApi\\TestApi.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\eid_middleware\\eid-mw\\doc\\sdk\\examples\\CS\\TestApi\\TestApi.csproj",
+        "projectName": "TestApi",
+        "projectPath": "D:\\eid_middleware\\eid-mw\\doc\\sdk\\examples\\CS\\TestApi\\TestApi.csproj",
+        "packagesPath": "C:\\Users\\fc163\\.nuget\\packages\\",
+        "outputPath": "D:\\eid_middleware\\eid-mw\\doc\\sdk\\examples\\CS\\TestApi\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\fc163\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {
+              "D:\\eid_middleware\\eid-mw\\doc\\sdk\\examples\\CS\\EidSamples\\EidSamples.csproj": {
+                "projectPath": "D:\\eid_middleware\\eid-mw\\doc\\sdk\\examples\\CS\\EidSamples\\EidSamples.csproj"
+              },
+              "D:\\eid_middleware\\eid-mw\\doc\\sdk\\wrappers\\C# pkcs11wrappers\\pkcs11net\\Pkcs11Net.csproj": {
+                "projectPath": "D:\\eid_middleware\\eid-mw\\doc\\sdk\\wrappers\\C# pkcs11wrappers\\pkcs11net\\Pkcs11Net.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204\\RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "D:\\eid_middleware\\eid-mw\\doc\\sdk\\wrappers\\C# pkcs11wrappers\\pkcs11net\\Pkcs11Net.csproj": {
+      "restore": {
+        "projectUniqueName": "D:\\eid_middleware\\eid-mw\\doc\\sdk\\wrappers\\C# pkcs11wrappers\\pkcs11net\\Pkcs11Net.csproj",
+        "projectName": "Pkcs11Net",
+        "projectPath": "D:\\eid_middleware\\eid-mw\\doc\\sdk\\wrappers\\C# pkcs11wrappers\\pkcs11net\\Pkcs11Net.csproj",
+        "frameworks": {
+          "net20": {
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "net20": {}
+      }
+    }
+  }
+}

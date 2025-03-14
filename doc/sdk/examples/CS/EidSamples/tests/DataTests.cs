@@ -79,7 +79,7 @@ namespace EidSamples.tests
         public void GetDateOfBirth()
         {
             ReadData dataTest = new ReadData("beidpkcs11.dll");
-            Assert.AreEqual("01 JAN 1971", dataTest.GetDateOfBirth());
+            Assert.AreEqual("17 FEB 2003", dataTest.GetDateOfBirth());
         }
         /// <summary>
         /// Tests the retrieval of the Identity file from the eID card

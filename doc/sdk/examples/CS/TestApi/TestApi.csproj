@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\wrappers\C# pkcs11wrappers\pkcs11net\Pkcs11Net.csproj" />
+    <ProjectReference Include="..\EidSamples\EidSamples.csproj" />
+  </ItemGroup>
+
+</Project>
