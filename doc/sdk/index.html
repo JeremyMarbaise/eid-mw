@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test eID API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group button {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Test eID API</h1>
+
+        <!-- Fetch Photo -->
+        <div class="form-group">
+            <button onclick="fetchPhoto()">Fetch Photo</button>
+            <div class="result" id="photo-result">
+                <img id="photo" alt="Photo">
+            </div>
+        </div>
+
+        <!-- Fetch Name -->
+        <div class="form-group">
+            <button onclick="fetchName()">Fetch Name</button>
+            <div class="result" id="name-result"></div>
+        </div>
+
+        <!-- Fetch Labels -->
+        <div class="form-group">
+            <button onclick="fetchLabels()">Fetch Labels</button>
+            <div class="result" id="labels-result"></div>
+        </div>
+
+        <!-- Fetch Date of Birth -->
+        <div class="form-group">
+            <button onclick="fetchDOB()">Fetch Date of Birth</button>
+            <div class="result" id="dob-result"></div>
+        </div>
+
+        <!-- Authentication -->
+        <div class="form-group">
+            <h2>Authentication</h2>
+            <button onclick="startAuthentication()">Start Authentication</button>
+            <div class="result" id="auth-result"></div>
+        </div>
+
+        <!-- Sign Data -->
+        <div class="form-group">
+            <h2>Sign Data</h2>
+            <label for="data-to-sign">Data to Sign (Base64 encoded):</label>
+            <input type="text" id="data-to-sign" placeholder="Enter data to sign">
+            <button onclick="signData()">Sign Data</button>
+            <div class="result" id="sign-result"></div>
+        </div>
+    </div>
+
+    <script>
+        const apiBaseUrl = 'https://localhost:7043';
+
+        // Fetch Photo
+        async function fetchPhoto() {
+            try {
+                const response = await fetch(`${apiBaseUrl}/photo`);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const imageUrl = URL.createObjectURL(blob);
+                    document.getElementById('photo').src = imageUrl;
+                    document.getElementById('photo-result').style.display = 'block';
+                } else {
+                    document.getElementById('photo-result').innerText = 'Failed to fetch photo.';
+                }
+            } catch (error) {
+                document.getElementById('photo-result').innerText = `Error: ${error.message}`;
+            }
+        }
+
+        // Fetch Name
+        async function fetchName() {
+            try {
+                const response = await fetch(`${apiBaseUrl}/name`);
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('name-result').innerText = `Name: ${data.name}`;
+                } else {
+                    document.getElementById('name-result').innerText = 'Failed to fetch name.';
+                }
+            } catch (error) {
+                document.getElementById('name-result').innerText = `Error: ${error.message}`;
+            }
+        }
+
+        // Fetch Labels
+        async function fetchLabels() {
+            try {
+                const response = await fetch(`${apiBaseUrl}/labels`);
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('labels-result').innerText = `Label: ${data.label}`;
+                } else {
+                    document.getElementById('labels-result').innerText = 'Failed to fetch labels.';
+                }
+            } catch (error) {
+                document.getElementById('labels-result').innerText = `Error: ${error.message}`;
+            }
+        }
+
+        // Fetch Date of Birth
+        async function fetchDOB() {
+            try {
+                const response = await fetch(`${apiBaseUrl}/dob`);
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('dob-result').innerText = `Date of Birth: ${data.dateOfBirth}`;
+                } else {
+                    document.getElementById('dob-result').innerText = 'Failed to fetch date of birth.';
+                }
+            } catch (error) {
+                document.getElementById('dob-result').innerText = `Error: ${error.message}`;
+            }
+        }
+
+        // Start Authentication
+        async function startAuthentication() {
+            try {
+                // Step 1: Get a challenge
+                const challengeResponse = await fetch(`${apiBaseUrl}/auth/challenge`);
+                if (!challengeResponse.ok) {
+                    throw new Error('Failed to get challenge.');
+                }
+                const data = await challengeResponse.json();
+       
+
+                // Step 2: Sign the challenge (this part should be done on the client side using the eID card)
+                // For demonstration, we'll assume the signature is generated elsewhere and passed here.
+                const signature = await signChallenge(data.challenge); // Replace this with actual signing logic
+                const signatureBase64 = btoa(String.fromCharCode(...new Uint8Array(signature)));
+                // Step 3: Send the signed challenge to the server for verification
+                const authResponse = await fetch(`${apiBaseUrl}/auth/authenticate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({challenge: data.challenge, signature: signatureBase64 }),
+                });
+
+                if (authResponse.ok) {
+                    const  Authenticated  = await authResponse.json();
+                    document.getElementById('auth-result').innerText = `Authenticated: ${Authenticated}`;
+                } else {
+                    document.getElementById('auth-result').innerText = 'Authentication failed.';
+                }
+            } catch (error) {
+                document.getElementById('auth-result').innerText = `Error: ${error.message}`;
+            }
+        }
+
+        // Placeholder function for signing the challenge (replace with actual signing logic)
+        async function signChallenge(challenge) {
+            // In a real application, this function would use the eID card to sign the challenge.
+            // For demonstration, we'll return a dummy signature.
+            return new TextEncoder().encode(challenge); // Replace with actual signing logic
+        }
+
+        // Sign Data
+        async function signData() {
+            try {
+
+                const dataToSign = document.getElementById('data-to-sign').value;
+                if (!dataToSign) {
+                    alert('Please enter data to sign.');
+                    return;
+                }
+
+                // Convert the Base64 encoded string to a byte array
+                const byteArray = btoa(String.fromCharCode(...new Uint8Array(dataToSign)));
+
+                // Send the byte array to the /auth/sign endpoint
+                const response = await fetch(`${apiBaseUrl}/auth/sign`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({data: byteArray}), // Convert byte array to JSON array
+                });
+
+                if (response.ok) {
+                    const signedData = await response.json();
+                    document.getElementById('sign-result').innerText = `Signed Data: ${signedData}`;
+                } else {
+                    document.getElementById('sign-result').innerText = 'Failed to sign data.';
+                }
+            } catch (error) {
+                document.getElementById('sign-result').innerText = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
