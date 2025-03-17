@@ -7,6 +7,9 @@ using System.Text.Json;
 using EidSamples;
 using System.Security.Cryptography;
 using System.Text;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
+using Net.Sf.Pkcs11.Objects;
 
 public class Program
 {
@@ -70,7 +73,7 @@ public class Program
                         endpoints.MapGet("/labels", async context =>
                         {
                             string label = GetLabels();
-                            await context.Response.WriteAsJsonAsync(new { Label= label });
+                            await context.Response.WriteAsJsonAsync(new { Label = label });
                         });
 
                         // Route to get the date of birth
@@ -99,19 +102,35 @@ public class Program
                             bool isAuthenticated = Authenticate(request.Challenge, request.Signature);
                             await context.Response.WriteAsJsonAsync(new { Authenticated = isAuthenticated });
                         });
-                        endpoints.MapPost("/auth/sign", async context => 
+                        endpoints.MapPost("/auth/sign", async context =>
                         {
                             var request = await context.Request.ReadFromJsonAsync<signingdata>();
-                            if (request == null || request.data==null) 
+                            if (request == null || request.data == null)
                             {
                                 context.Response.StatusCode = StatusCodes.Status400BadRequest;
                                 await context.Response.WriteAsync("Invalid request.");
                                 return;
                             }
-                            byte[] signeddata=GetSignedData(request.data);
-                            await context.Response.WriteAsJsonAsync<byte[]>(signeddata);   
+                            byte[] signeddata = GetSignedData(request.data);
+                            await context.Response.WriteAsJsonAsync<byte[]>(signeddata);
+                        });
 
+                        endpoints.MapGet("/auth/certificate", async context =>
+                        {
+                            X509Certificate2 certificat = getRNCertificate();
+                            if (certificat == null)
+                            {
+                                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                                await context.Response.WriteAsync("Certificate not found.");
+                                return;
+                            }
 
+                            // Export the certificate as a Base64-encoded string (DER format)
+                            byte[] certBytes = certificat.Export(X509ContentType.Cert);
+                            string base64Cert = Convert.ToBase64String(certBytes);
+
+                            // Send the Base64-encoded certificate in the response
+                            await context.Response.WriteAsJsonAsync(new { certificate = base64Cert });
 
                         });
 
@@ -175,7 +194,7 @@ public class Program
             return false;
         }
     }
-    private static byte[] GetSignedData(byte [] data) 
+    private static byte[] GetSignedData(byte[] data)
     {
         Sign signTest = new Sign("beidpkcs11.dll");
         return signTest.DoSign(data, "Authentication");
@@ -187,6 +206,15 @@ public class Program
         // For example, you might read it from a certificate or another source
         return File.ReadAllBytes("path_to_public_key.der");
     }
+
+    private static X509Certificate2 getRNCertificate() 
+    {
+        ReadData dataTest = new ReadData("beidpkcs11.dll");
+        byte[] certificateRNFile = dataTest.GetCertificateRNFile();
+        return  new X509Certificate2(certificateRNFile);
+        
+    }
+
 }
 
 public class AuthRequest

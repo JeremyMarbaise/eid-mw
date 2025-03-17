@@ -83,6 +83,11 @@
             <button onclick="signData()">Sign Data</button>
             <div class="result" id="sign-result"></div>
         </div>
+        <div class="form-group">
+            <h2>Certificate</h2>
+            <button onclick="fetchCertificate()">Get Certificate</button>
+            <div class="result" id="certificate-result"></div>
+        </div>
     </div>
 
     <script>
@@ -148,6 +153,21 @@
             } catch (error) {
                 document.getElementById('dob-result').innerText = `Error: ${error.message}`;
             }
+        }
+        async function fetchCertificate()
+        {
+            try {
+                const response = await fetch(`${apiBaseUrl}/auth/certificate`);
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('certificate-result').innerText = `certificate: ${data.certificate}`;
+                } else {
+                    document.getElementById('certificate-result').innerText = 'Failed to fetch certificate.';
+                }
+            } catch (error) {
+                document.getElementById('certificate-result').innerText = `Error: ${error.message}`;
+            }
+
         }
 
         // Start Authentication
