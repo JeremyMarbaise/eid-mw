@@ -1,8 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "qNDGmbiw+FRyddJworpGJnJ9oSDvEZDKS0XkHnrVf3i2+YsGd8ZD7u8Vg3YaMkr5HBU/HdJsOLAXatYnQN5oGQ==",
+  "dgSpecHash": "a2BaGjWE5zmA3F48k6EykpQWdShZvydyUpCcjgrhT6G7uNL21LTz5oMorJTXtmU8r2sKPK9CvqxD+90Uk9QqXg==",
   "success": true,
   "projectFilePath": "D:\\eid_middleware\\eid-mw\\doc\\sdk\\examples\\CS\\TestApi\\TestApi.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\fc163\\.nuget\\packages\\bouncycastle.cryptography\\2.5.1\\bouncycastle.cryptography.2.5.1.nupkg.sha512"
+  ],
   "logs": []
 }

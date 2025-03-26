@@ -87,6 +87,8 @@ L'api Asp.net se trouve dans [examples/CS/TestApi](examples/CS/TestApi).
 
 ## Endpoints de l'API
 
+### Fichier HTML pour tester l'api se trouve dans [index.html](index.html)
+
 ### 1. **Récupérer la photo**
 - **Endpoint**: `GET /photo`
 - **Description**: Récupère la photo stockée sur la carte eID.
@@ -161,6 +163,15 @@ L'api Asp.net se trouve dans [examples/CS/TestApi](examples/CS/TestApi).
 - **Réponse**: Données signées encodées en base64.
 
 ---
+### 8. **Récupération du certificat**
+- **Endpoint**: `GET /auth/certificate`
+- **Description**: Récupère le certificat RN de la carte eid.
+- **Réponse**:
+  ```json
+  {
+    "certificate": "certificat-encodées-en-base64"
+  }
+  ```
 
 ## Utilisation
 1. **Récupérer des données** :

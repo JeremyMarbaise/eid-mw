@@ -43,8 +43,10 @@ namespace EidSamples.tests
             // Verification
             ReadData dataTest = new ReadData("beidpkcs11.dll");
             Integrity integrityTest = new Integrity();
-            Assert.IsTrue(integrityTest.Verify(testdata, signeddata,
-                dataTest.GetCertificateAuthenticationFile()));
+            bool assertion = integrityTest.Verify(testdata, signeddata,
+                dataTest.GetCertificateAuthenticationFile());
+            Console.WriteLine(assertion);
+            Assert.IsTrue(assertion);
             //Assert.False(integrityTest.Verify(testdata, signeddata,
             //    dataTest.GetCertificateSignatureFile()));
 

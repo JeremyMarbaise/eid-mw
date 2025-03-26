@@ -9,7 +9,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
-using Net.Sf.Pkcs11.Objects;
+using Org.BouncyCastle.Asn1.Cmp;
+
+
+
+
 
 public class Program
 {
@@ -34,13 +38,15 @@ public class Program
                         });
                     });
                 });
-
+           
                 webBuilder.Configure(app =>
                 {
                     app.UseCors("AllowAllOrigins");
 
                     // Enable routing
                     app.UseRouting();
+
+
 
                     // Define endpoints
                     app.UseEndpoints(endpoints =>
@@ -82,26 +88,10 @@ public class Program
                             string dob = GetDateOfBirth();
                             await context.Response.WriteAsJsonAsync(new { DateOfBirth = dob });
                         });
-                        endpoints.MapGet("/auth/challenge", async context =>
-                        {
-                            string challenge = GenerateChallenge();
-                            await context.Response.WriteAsJsonAsync(new { Challenge = challenge });
-                        });
+             
 
-                        // Route to authenticate using the eID card
-                        endpoints.MapPost("/auth/authenticate", async context =>
-                        {
-                            var request = await context.Request.ReadFromJsonAsync<AuthRequest>();
-                            if (request == null || string.IsNullOrEmpty(request.Challenge) || request.Signature == null)
-                            {
-                                context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                                await context.Response.WriteAsync("Invalid request.");
-                                return;
-                            }
 
-                            bool isAuthenticated = Authenticate(request.Challenge, request.Signature);
-                            await context.Response.WriteAsJsonAsync(new { Authenticated = isAuthenticated });
-                        });
+
                         endpoints.MapPost("/auth/sign", async context =>
                         {
                             var request = await context.Request.ReadFromJsonAsync<signingdata>();
@@ -112,12 +102,14 @@ public class Program
                                 return;
                             }
                             byte[] signeddata = GetSignedData(request.data);
+ 
+
                             await context.Response.WriteAsJsonAsync<byte[]>(signeddata);
                         });
 
                         endpoints.MapGet("/auth/certificate", async context =>
                         {
-                            X509Certificate2 certificat = getRNCertificate();
+                            X509Certificate2 certificat = getAuthenticationCertificate();
                             if (certificat == null)
                             {
                                 context.Response.StatusCode = StatusCodes.Status404NotFound;
@@ -133,10 +125,34 @@ public class Program
                             await context.Response.WriteAsJsonAsync(new { certificate = base64Cert });
 
                         });
+                        endpoints.MapGet("/auth/publickey", async context =>
+                        {
+
+                           PublicKey pubkey = GetPublicKey();
+
+                            if (pubkey == null) 
+                            {
+
+                                context.Response.StatusCode = StatusCodes.Status404NotFound;
+                                await context.Response.WriteAsync("Certificate not found.");
+                                return;
+
+                            }
+                            
+                            byte[] keybytes=pubkey.ExportSubjectPublicKeyInfo();
+                            string base64key = Convert.ToBase64String(keybytes);
+                            await context.Response.WriteAsJsonAsync(new { pubkey = base64key});
+
+
+                        });
+
 
                     });
                 });
             });
+
+   
+
 
     private static byte[] GetPhotoFile()
     {
@@ -165,54 +181,35 @@ public class Program
         return dataTest.GetDateOfBirth(); // Assuming you have a method like GetDateOfBirth()
     }
 
-    private static string GenerateChallenge()
-    {
-        // Generate a random challenge (e.g., a GUID)
-        return Guid.NewGuid().ToString();
-    }
 
-    private static bool Authenticate(string challenge, byte[] signature)
-    {
-        // Verify the signature using the public key
-        try
-        {
-            // Replace this with your logic to get the public key
-            byte[] publicKeyBytes = GetPublicKey(); // Assuming you have a method to get the public key
-            using (var rsa = RSA.Create())
-            {
-                rsa.ImportSubjectPublicKeyInfo(publicKeyBytes, out _);
-
-                // Verify the signature
-                byte[] challengeBytes = Encoding.UTF8.GetBytes(challenge);
-                bool isValid = rsa.VerifyData(challengeBytes, signature, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
-
-                return isValid;
-            }
-        }
-        catch
-        {
-            return false;
-        }
-    }
     private static byte[] GetSignedData(byte[] data)
     {
         Sign signTest = new Sign("beidpkcs11.dll");
         return signTest.DoSign(data, "Authentication");
     }
 
-    private static byte[] GetPublicKey()
+    private static PublicKey GetPublicKey()
     {
-        // Replace this with your logic to get the public key from the eID card
-        // For example, you might read it from a certificate or another source
-        return File.ReadAllBytes("path_to_public_key.der");
+
+        var certificate = getAuthenticationCertificate();
+
+        // use public key from certificate during verification
+        return certificate.PublicKey;
+
+
+
     }
 
-    private static X509Certificate2 getRNCertificate() 
+
+
+
+    private static X509Certificate2 getAuthenticationCertificate()
     {
         ReadData dataTest = new ReadData("beidpkcs11.dll");
-        byte[] certificateRNFile = dataTest.GetCertificateRNFile();
-        return  new X509Certificate2(certificateRNFile);
+        byte[] AuthenticationCertificate = dataTest.GetCertificateAuthenticationFile();
+        return new X509Certificate2(AuthenticationCertificate);
         
+
     }
 
 }

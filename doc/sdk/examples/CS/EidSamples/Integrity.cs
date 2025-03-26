@@ -73,6 +73,9 @@ namespace EidSamples
                 }
                 else if (String.Compare(algo, "1.2.840.10045.2.1") == 0) //EC Public Key
                 {
+
+
+                    Console.WriteLine("ECDSA algorythm");
                     // use public key from certificate during verification
                     PublicKey publicKey = x509Certificate.PublicKey;
 
@@ -123,7 +126,9 @@ namespace EidSamples
 
                     ECDsa dsa = ECDsa.Create(parameters);
                     // verify signature. assume that the data was SHA384 hashed.
+  
                     return dsa.VerifyData(data, signature, HashAlgorithmName.SHA384);
+                    
                 }
                 else
                 {

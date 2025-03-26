@@ -1,7 +1,20 @@
 {
   "version": 3,
   "targets": {
-    "net7.0": {
+    "net8.0": {
+      "BouncyCastle.Cryptography/2.5.1": {
+        "type": "package",
+        "compile": {
+          "lib/net6.0/BouncyCastle.Cryptography.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net6.0/BouncyCastle.Cryptography.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "EidSamples/1.0.0": {
         "type": "project",
         "dependencies": {
@@ -26,6 +39,26 @@
     }
   },
   "libraries": {
+    "BouncyCastle.Cryptography/2.5.1": {
+      "sha512": "zy8TMeTP+1FH2NrLaNZtdRbBdq7u5MI+NFZQOBSM69u5RFkciinwzV2eveY6Kjf5MzgsYvvl6kTStsj3JrXqkg==",
+      "type": "package",
+      "path": "bouncycastle.cryptography/2.5.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "README.md",
+        "bouncycastle.cryptography.2.5.1.nupkg.sha512",
+        "bouncycastle.cryptography.nuspec",
+        "lib/net461/BouncyCastle.Cryptography.dll",
+        "lib/net461/BouncyCastle.Cryptography.xml",
+        "lib/net6.0/BouncyCastle.Cryptography.dll",
+        "lib/net6.0/BouncyCastle.Cryptography.xml",
+        "lib/netstandard2.0/BouncyCastle.Cryptography.dll",
+        "lib/netstandard2.0/BouncyCastle.Cryptography.xml",
+        "packageIcon.png"
+      ]
+    },
     "EidSamples/1.0.0": {
       "type": "project",
       "path": "../EidSamples/EidSamples.csproj",
@@ -38,9 +71,9 @@
     }
   },
   "projectFileDependencyGroups": {
-    "net7.0": [
-      "EidSamples >= 1.0.0",
-      "Pkcs11Net >= 1.0.0"
+    "net8.0": [
+      "BouncyCastle.Cryptography >= 2.5.1",
+      "EidSamples >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -65,7 +98,7 @@
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
-        "net7.0"
+        "net8.0"
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
@@ -73,14 +106,11 @@
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
-        "net7.0": {
-          "targetAlias": "net7.0",
+        "net8.0": {
+          "targetAlias": "net8.0",
           "projectReferences": {
             "D:\\eid_middleware\\eid-mw\\doc\\sdk\\examples\\CS\\EidSamples\\EidSamples.csproj": {
               "projectPath": "D:\\eid_middleware\\eid-mw\\doc\\sdk\\examples\\CS\\EidSamples\\EidSamples.csproj"
-            },
-            "D:\\eid_middleware\\eid-mw\\doc\\sdk\\wrappers\\C# pkcs11wrappers\\pkcs11net\\Pkcs11Net.csproj": {
-              "projectPath": "D:\\eid_middleware\\eid-mw\\doc\\sdk\\wrappers\\C# pkcs11wrappers\\pkcs11net\\Pkcs11Net.csproj"
             }
           }
         }
@@ -97,8 +127,14 @@
       }
     },
     "frameworks": {
-      "net7.0": {
-        "targetAlias": "net7.0",
+      "net8.0": {
+        "targetAlias": "net8.0",
+        "dependencies": {
+          "BouncyCastle.Cryptography": {
+            "target": "Package",
+            "version": "[2.5.1, )"
+          }
+        },
         "imports": [
           "net461",
           "net462",
@@ -118,7 +154,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

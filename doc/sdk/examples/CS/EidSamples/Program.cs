@@ -17,11 +17,13 @@
  * http://www.gnu.org/licenses/.
 
 **************************************************************************** */
-using System.Collections.Generic;
-using System;
-using System.Security.Cryptography.X509Certificates;
+
 using EidSamples.tests;
+using System;
+
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace EidSamples
 {
@@ -31,17 +33,22 @@ namespace EidSamples
         {
             // Initialize your data reader
             ReadData dataTest = new ReadData("beidpkcs11.dll");
+            Sign sign = new Sign("beidpkcs11.dll");
+            dataTest.GetPublicKey("Authentication");
+            
 
-        
-            Sign signTest = new Sign("beidpkcs11.dll");
-            byte[] testdata = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
-            byte[] signeddata = signTest.DoSign(testdata, "Authentication");
-            for(int i=0;i<8;i++) 
-            {
-                Console.WriteLine(signeddata[i]);
-                
-            }
-     
+            //Sign signTest = new Sign("beidpkcs11.dll");
+            //byte[] testdata = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 };
+            //byte[] signeddata = signTest.DoSign(testdata, "Authentication");
+            //for(int i=0;i<8;i++) 
+            //{
+            //    Console.WriteLine(signeddata[i]);
+
+            //}
+
+            
+
+
 
 
             //// Get the photo as a byte array

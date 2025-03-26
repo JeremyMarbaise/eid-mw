@@ -511,6 +511,7 @@ namespace EidSamples
                     // First, define a search template 
 
                     // The label attribute of the objects should equal PubKeyName
+                    
                     ObjectClassAttribute classAttribute = new ObjectClassAttribute(CKO.PUBLIC_KEY);
                     ByteArrayAttribute keyLabelAttribute = new ByteArrayAttribute(CKA.LABEL);
                     keyLabelAttribute.Value = System.Text.Encoding.UTF8.GetBytes(PubKeyName);
@@ -526,6 +527,9 @@ namespace EidSamples
                         return eCPublicKey;
                     }
                     eCPublicKey = (ECPublicKey)pubkeys[0];
+                 
+                   
+                    
                   //  session.FindObjectsFinal();
                 }
                 else
@@ -541,5 +545,72 @@ namespace EidSamples
             }
             return eCPublicKey;
         }
+
+
+
+
+
+
+
+        public PrivateKey GetPrivateKey(String PrivateKeyName)
+        {
+            ECPrivateKey eCPrivateKey = null;
+            // pkcs11 module init
+            if (m == null)
+            {
+                m = Module.GetInstance(mFileName);
+            }
+            try
+            {
+                // Get the first slot (cardreader) with a token
+                Slot[] slotlist = m.GetSlotList(true);
+                if (slotlist.Length > 0)
+                {
+                    Slot slot = slotlist[0];
+                    Session session = slot.Token.OpenSession(true);
+                    // Search for objects
+                    // First, define a search template 
+
+                    // The label attribute of the objects should equal PubKeyName
+
+                    ObjectClassAttribute classAttribute = new ObjectClassAttribute(CKO.PRIVATE_KEY);
+                    ByteArrayAttribute keyLabelAttribute = new ByteArrayAttribute(CKA.LABEL);
+                    keyLabelAttribute.Value = System.Text.Encoding.UTF8.GetBytes(PrivateKeyName);
+
+                    session.FindObjectsInit(new P11Attribute[] { classAttribute, keyLabelAttribute });
+                    //P11Object[] pubkeys = session.FindObjects(1) as P11Object[];
+                    P11Object[] privkeys = session.FindObjects(1);
+                    session.FindObjectsFinal();
+
+                    if ((privkeys.Length == 0) || (privkeys[0] == null))
+                    {
+                        Console.WriteLine("Public Key Object not found");
+                        return eCPrivateKey;
+                    }
+                    eCPrivateKey = (ECPrivateKey)privkeys[0];
+
+
+
+
+                    //  session.FindObjectsFinal();
+                }
+                else
+                {
+                    Console.WriteLine("No card found\n");
+                }
+            }
+            finally
+            {
+                // pkcs11 finalize
+                m.Dispose();//m.Finalize_();
+                m = null;
+            }
+            return (PrivateKey)eCPrivateKey;
+        }
+
+
+
+
+
     }
 }
