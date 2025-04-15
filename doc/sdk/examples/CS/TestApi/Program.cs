@@ -10,6 +10,9 @@ using System.Text;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using Org.BouncyCastle.Asn1.Cmp;
+using EidSamples.tests;
+using TestApi.services;
+using auth_server.Classes;
 
 
 
@@ -29,6 +32,8 @@ public class Program
             {
                 webBuilder.ConfigureServices(services =>
                 {
+                    services.AddSingleton<EidCardService>();
+
                     services.AddCors(options =>
                     {
                         options.AddPolicy("AllowAllOrigins", builder =>
@@ -52,10 +57,36 @@ public class Program
                     // Define endpoints
                     app.UseEndpoints(endpoints =>
                     {
+
+
+
+                        endpoints.MapGet("/auth/register", async context =>
+                        {
+                            var eidService = context.RequestServices.GetRequiredService<EidCardService>();
+                            string date = await eidService.GetDateOfBirth();
+                            var data = new registerrequest()
+                           
+
+                            {
+                                DateOfBirth = EidDateParser.ConvertEidDateToIso8601(date),
+                                gender= await eidService.GetGender(),
+                                name =await  eidService.GetName(),
+                                nationalNumber=await eidService.GetNationalNumber(), 
+                                address=await eidService.getAddress(),
+                                    
+
+                            };
+                            await context.Response.WriteAsJsonAsync<registerrequest>(data);
+
+
+
+                        }); 
+                     
                         // Route to get the photo
                         endpoints.MapGet("/photo", async context =>
                         {
-                            byte[] photoBytes = GetPhotoFile();
+                            var eidService = context.RequestServices.GetRequiredService<EidCardService>();
+                            byte[] photoBytes =await eidService.GetPhotoFile();
 
                             if (photoBytes != null)
                             {
@@ -69,31 +100,13 @@ public class Program
                             }
                         });
 
-                        // Route to get the name
-                        endpoints.MapGet("/name", async context =>
-                        {
-                            string name = GetName();
-                            await context.Response.WriteAsJsonAsync(new { Name = name });
-                        });
-
-                        // Route to get the address
-                        endpoints.MapGet("/labels", async context =>
-                        {
-                            string label = GetLabels();
-                            await context.Response.WriteAsJsonAsync(new { Label = label });
-                        });
-
-                        // Route to get the date of birth
-                        endpoints.MapGet("/dob", async context =>
-                        {
-                            string dob = GetDateOfBirth();
-                            await context.Response.WriteAsJsonAsync(new { DateOfBirth = dob });
-                        });
+              
 
 
                         //signs concatenation of challenge timestampwindow and salt
                         endpoints.MapPost("/auth/authentication", async context =>
                         {
+                            var eidService = context.RequestServices.GetRequiredService<EidCardService>();
                             var request= await context.Request.ReadFromJsonAsync< AuthRequest>();
                             if (request == null || request.challenge == null || request.salt==null)
                             {
@@ -103,7 +116,7 @@ public class Program
                             }
                             string Timestampwindow=GetCurrentWindow().ToString();
                             byte[] data = ConcatBytes(request.challenge, Encoding.UTF8.GetBytes(Timestampwindow), request.salt);
-                            var signeddata=GetSignedData(data);
+                            var signeddata=await eidService.GetSignedData(data);
                             await context.Response.WriteAsJsonAsync<byte[]>(signeddata);
 
                         });
@@ -113,6 +126,7 @@ public class Program
                         // signs a byte[] array 
                         endpoints.MapPost("/auth/sign", async context =>
                         {
+                            var eidService = context.RequestServices.GetRequiredService<EidCardService>();
                             var request = await context.Request.ReadFromJsonAsync<signingdata>();
                             if (request == null || request.data == null)
                             {
@@ -120,7 +134,7 @@ public class Program
                                 await context.Response.WriteAsync("Invalid request.");
                                 return;
                             }
-                            byte[] signeddata = GetSignedData(request.data);
+                            byte[] signeddata = await eidService.GetSignedData(request.data);
  
 
                             await context.Response.WriteAsJsonAsync<byte[]>(signeddata);
@@ -128,7 +142,8 @@ public class Program
 
                         endpoints.MapGet("/auth/certificate", async context =>
                         {
-                            X509Certificate2 certificat = getAuthenticationCertificate();
+                            var eidService = context.RequestServices.GetRequiredService<EidCardService>();
+                            X509Certificate2 certificat = await eidService.getAuthenticationCertificate();
                             if (certificat == null)
                             {
                                 context.Response.StatusCode = StatusCodes.Status404NotFound;
@@ -144,10 +159,17 @@ public class Program
                             await context.Response.WriteAsJsonAsync(new { certificate = base64Cert });
 
                         });
+
+
+
+                     
+
+
                         endpoints.MapGet("/auth/publickey", async context =>
                         {
 
-                           PublicKey pubkey = GetPublicKey();
+                            var eidService = context.RequestServices.GetRequiredService<EidCardService>();
+                            PublicKey pubkey = await eidService.GetPublicKey();
 
                             if (pubkey == null) 
                             {
@@ -172,64 +194,7 @@ public class Program
 
    
 
-
-    private static byte[] GetPhotoFile()
-    {
-        ReadData dataTest = new ReadData("beidpkcs11.dll");
-        return dataTest.GetPhotoFile();
-    }
-
-    private static string GetName()
-    {
-        // Replace this with your logic to get the name
-        ReadData dataTest = new ReadData("beidpkcs11.dll");
-        return dataTest.GetSurname(); // Assuming you have a method like GetName()
-    }
-
-    private static string GetLabels()
-    {
-        // Replace this with your logic to get the address
-        ReadData dataTest = new ReadData("beidpkcs11.dll");
-        return dataTest.GetCertificateLabels()[0]; // Assuming you have a method like GetAddress()
-    }
-
-    private static string GetDateOfBirth()
-    {
-        // Replace this with your logic to get the date of birth
-        ReadData dataTest = new ReadData("beidpkcs11.dll");
-        return dataTest.GetDateOfBirth(); // Assuming you have a method like GetDateOfBirth()
-    }
-
-
-    private static byte[] GetSignedData(byte[] data)
-    {
-        Sign signTest = new Sign("beidpkcs11.dll");
-        return signTest.DoSign(data, "Authentication");
-    }
-
-    private static PublicKey GetPublicKey()
-    {
-
-        var certificate = getAuthenticationCertificate();
-
-        // use public key from certificate during verification
-        return certificate.PublicKey;
-
-
-
-    }
-
-
-
-
-    private static X509Certificate2 getAuthenticationCertificate()
-    {
-        ReadData dataTest = new ReadData("beidpkcs11.dll");
-        byte[] AuthenticationCertificate = dataTest.GetCertificateAuthenticationFile();
-        return new X509Certificate2(AuthenticationCertificate);
-        
-
-    }
+   
 
     public static DateTime GetCurrentWindow()
     {
@@ -283,5 +248,16 @@ public class AuthRequest
 public class signingdata
 {
     public byte[] data { get; set; }
+
+}
+
+public class registerrequest
+{
+   public string name {  get; set; }
+   public string nationalNumber { get; set; }
+   public string DateOfBirth { get; set; }
+   public string gender { get; set; }
+
+    public string address { get; set; } 
 
 }

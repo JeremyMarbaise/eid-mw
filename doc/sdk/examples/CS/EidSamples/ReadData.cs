@@ -31,6 +31,7 @@ using Net.Sf.Pkcs11.Wrapper;
 
 using System.Security.Cryptography.X509Certificates;
 using PublicKey = Net.Sf.Pkcs11.Objects.PublicKey;
+using Microsoft.SqlServer.Server;
 
 namespace EidSamples
 {
@@ -143,6 +144,18 @@ namespace EidSamples
         {
             return GetData("surname");
         }
+        public string GetFirstname() 
+        {
+            return GetData("firstnames");
+        
+        }
+
+        public string GetNationalNumber() 
+        {
+            return GetData("national_number");
+        
+        }
+       
 
         /// <summary>
         /// Get date of birth of the owner. This is a language specific string
@@ -193,7 +206,7 @@ namespace EidSamples
                         ByteArrayAttribute labelAttribute = new ByteArrayAttribute(CKA.LABEL);
                         labelAttribute.Value = System.Text.Encoding.UTF8.GetBytes(label);
 
-
+                        
                         session.FindObjectsInit(new P11Attribute[] { classAttribute, labelAttribute });
                         P11Object[] foundObjects = session.FindObjects(50);
                         int counter = foundObjects.Length;
